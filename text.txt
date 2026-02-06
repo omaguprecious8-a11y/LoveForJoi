@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To my cute purum, Joi</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Georgia', serif;
+      background: linear-gradient(135deg, #5f2c82, #c850c0, #ffb6c1);
+      color: #f7f4f9;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .slider {
+      display: flex;
+      width: 500vw;
+      height: 100vh;
+      transition: transform 0.9s ease-in-out;
+    }
+
+    .slide {
+      width: 100vw;
+      height: 100vh;
+      padding: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .content {
+      max-width: 750px;
+      opacity: 0;
+      animation: fadeIn 1.8s ease forwards;
+      animation-delay: var(--delay);
+    }
+
+    h1 { font-size: 2.6rem; font-weight: normal; }
+    p { font-size: 1.15rem; line-height: 1.9; }
+
+    .interactive {
+      font-weight: bold;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .emoji {
+      position: fixed;
+      font-size: 1.4rem;
+      animation: floatUp 1.6s ease forwards;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .hint {
+      position: absolute;
+      bottom: 22px;
+      width: 100%;
+      text-align: center;
+      font-size: 0.85rem;
+      opacity: 0.65;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(25px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-80px) scale(1.35); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- EDITABLE AREA: MUSIC (change file name or folder here) -->
+
+<!-- Background Music -->
+<audio id="bgMusic" loop>
+    <!-- EDIT HERE: put your mp3 inside /music and update the filename if needed -->
+    <source src="music/what-was-i-made-for.mp3" type="audio/mpeg">
+  </audio>
+
+<!-- EDITABLE AREA: SLIDE TEXT BELOW -->
+  <div class="slider" id="slider">
+
+  <section class="slide">
+    <div class="content" style="--delay:0.4s">
+      <h1>
+        Hi baby, you look so 
+        <span class="interactive" onclick="handleInteractive(event, ['😊','🥰','😳','😍'])">cute</span>
+      </h1>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="content" style="--delay:0.5s">
+      <p>
+        Hope your day went 
+        <span class="interactive" onclick="handleInteractive(event, ['❤️','💗','🥺','💞'])">love</span>?
+        <br/><br/>
+        I have missed you so much Babe
+      </p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="content" style="--delay:0.6s">
+      <p>
+        I know things haven’t been really smooth but it’s only going to get better.
+        <br/><br/>
+        I promise with everything in me, we are all gonna smile wildly again.
+      </p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="content" style="--delay:0.7s">
+      <p>
+        I want to be your man, I hate the fact that you aren’t mine already.
+        <br/><br/>
+        It worries me so much; it’s fair to say that I am obsessed with the ideation of you.
+      </p>
+    </div>
+  </section>
+
+  <section class="slide">
+    <div class="content" style="--delay:0.8s">
+      <p>
+        I love you more than you know,
+        <span class="interactive" onclick="handleInteractive(event, ['🥰','❤️','💙','💜','😊','😳','😍'])">Enouba</span>
+        ❤️💙❤️💜
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<div class="hint">Tap right → next · Tap left → back</div>
+
+<script>
+  const slider = document.getElementById('slider');
+  const music = document.getElementById('bgMusic');
+  let musicStarted = false;
+  let currentSlide = 0;
+  const totalSlides = 5;
+
+  function updateSlide() {
+    slider.style.transform = `translateX(-${currentSlide * 100}vw)`;
+  }
+
+  document.addEventListener('click', (e) => {
+    if (!musicStarted) {
+      music.volume = 0.35;
+      music.play().catch(() => {});
+      musicStarted = true;
+    }
+
+    if (e.target.closest('.interactive')) return;
+    const mid = window.innerWidth / 2;
+    if (e.clientX > mid && currentSlide < totalSlides - 1) currentSlide++;
+    if (e.clientX < mid && currentSlide > 0) currentSlide--;
+    updateSlide();
+  });
+
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+
+  document.addEventListener('touchend', (e) => {
+    if (e.target.closest('.interactive')) return;
+    const endX = e.changedTouches[0].clientX;
+    const diff = touchStartX - endX;
+    if (diff > 50 && currentSlide < totalSlides - 1) currentSlide++;
+    if (diff < -50 && currentSlide > 0) currentSlide--;
+    updateSlide();
+  });
+
+  function haptic() {
+    if (navigator.vibrate) navigator.vibrate([20, 30, 20]);
+  }
+
+  function handleInteractive(event, emojis) {
+    event.stopPropagation();
+    haptic();
+    burstAllAround(emojis);
+  }
+
+  function burstAllAround(emojis) {
+    const count = 26;
+    for (let i = 0; i < count; i++) {
+      const span = document.createElement('span');
+      span.className = 'emoji';
+      span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      span.style.left = Math.random() * window.innerWidth + 'px';
+      span.style.top = Math.random() * window.innerHeight + 'px';
+      document.body.appendChild(span);
+      setTimeout(() => span.remove(), 1600);
+    }
+  }
+</script>
+
+</body>
+</html>
